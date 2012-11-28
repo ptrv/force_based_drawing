@@ -7,7 +7,6 @@ boolean isSimulating = false;
 void setup() {
   size(500, 500);
   background(255);
-  // edges = new ArrayList<ArrayList<boolean>>();
 
   createObjects();
 }
@@ -63,10 +62,10 @@ boolean reflow(){
   float dis = 0.0;
   for(int i = 0; i < n; i++){
     Vertex v = vList.get(i);
-    // Vertex u;
+
     v.net_force.x = 0.0;
     v.net_force.y = 0.0;
-    // v.velocity.x = v.velocity.y = 0.0;
+
     for (int j = 0; j<n; j++){
       if(i == j)
         continue;
@@ -79,6 +78,7 @@ boolean reflow(){
       if(dsq == 0.0)
         dsq = 0.001f;
       float coul = 200 / dsq;
+
       v.net_force.x += coul * (v.x-u.x);
       v.net_force.y += coul * (v.y-u.y);
     }
@@ -87,13 +87,11 @@ boolean reflow(){
       if(!edges[i][j])
         continue;
       Vertex u = vList.get(j);
-       // countin the attraction
+       // counting the attraction
       v.net_force.x += 0.02*(u.x - v.x);
       v.net_force.y += 0.02*(u.y - v.y);
     }
   }
-  // println("Total energy: " + totalEnergy.x + " " + totalEnergy.y);
-  // println(dis);
   for(int i=0; i < n; i++) // set new positions
   {
     Vertex v = vList.get(i);
@@ -107,9 +105,7 @@ boolean reflow(){
       // counting the velocity (with damping 0.85)
       v.velocity.x = (v.velocity.x + v.net_force.x)*0.85;
       v.velocity.y = (v.velocity.y + v.net_force.y)*0.85;
-      // println("fx: "+v.net_force.x+" fy:"+v.net_force.y);
-      // println("vx: "+v.velocity.x+" vy:"+v.velocity.y);
-      dis += abs(v.net_force.x) + abs(v.net_force.y);
+      // dis += abs(v.net_force.x) + abs(v.net_force.y);
       totalEnergy.x = totalEnergy.x + (v.velocity.x*v.velocity.x);
       totalEnergy.y = totalEnergy.y + (v.velocity.y*v.velocity.y);
 
@@ -117,14 +113,12 @@ boolean reflow(){
       v.y += v.velocity.y;
       v.x = constrain(v.x, 0, 500);
       v.y = constrain(v.y, 0, 500);
-      // println("posx: "+v.velocity.x+" posy: "+v.velocity.y);
-
     }
   }
-  if(dis < e*0.5)
-  // if(totalEnergy.x < 0.01 && totalEnergy.y < 0.01)
+  float lenTotalEnergy = sqrt(totalEnergy.x * totalEnergy.x
+                              + totalEnergy.y * totalEnergy.y);
+  if(lenTotalEnergy < 0.01)
     return true;
-    // return true;
 
   return false;
 }
@@ -159,34 +153,5 @@ void keyPressed(){
   }
   else if (key == 'n') {
     createObjects();
-  }
-
-}
-
-class Vertex {
-  int x;
-  int y;
-  PVector velocity;
-  PVector net_force;
-  boolean isDragged = false;
-
-  int radius = 10;
-  public Vertex(){
-    velocity = new PVector(0.0, 0.0);
-    net_force = new PVector(0.0, 0.0);
-  }
-  void draw() {
-    ellipseMode(CENTER);
-    fill(255,0,0);
-    // println("x: "+x+" y: "+y);
-    ellipse(x, y, radius, radius);
-  }
-
-  boolean hitTest(int mx, int my){
-    if(mx > x-radius && mx < x+radius
-      && my > y-radius && my < y+radius){
-      return true;
-    }
-    return false;
   }
 }
